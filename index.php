@@ -2,24 +2,31 @@
 <html>
 <body>
 <?php
-$input = "abc@icloud.com 
-Jos@gmail.com 
-tat@gmail.com
-1m@gmail.com";
+class EmailListFormatter
+{
+    public static function format(string $input): string
+    {
+        $emails = explode("\n", $input);
+        $emails = array_map('trim', $emails);
+        $emails = array_filter($emails);
+        $emails = array_map('strtolower', $emails);
+        $emails = array_unique($emails);
 
-// Convert multiline string into array
-$emails = explode("\n", $input);
+        $emails = array_filter($emails, function ($email) {
+            return filter_var($email, FILTER_VALIDATE_EMAIL);
+        });
 
-// Trim whitespace from each email
-$emails = array_map('trim', $emails);
+        return "'" . implode("',\n'", $emails) . "'";
+    }
+}
 
-// Remove empty lines
-$emails = array_filter($emails);
-
-// Format into quoted comma-separated list
-$formatted = "'" . implode("',\n'", $emails) . "'";
-
-echo $formatted;
+$input = "
+abc@gmail.com
+ijk@gmail.com
+lmn@yahoo.com
+xyz@icloud.com
+";
+echo EmailListFormatter::format($input);
 
 ?> 
 </body>
